@@ -42,6 +42,7 @@ import android.view.textservice.TextServicesManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Example of writing an input method for a soft keyboard.  This code is
@@ -102,6 +103,8 @@ public class SoftKeyboard extends InputMethodService
         final TextServicesManager tsm = (TextServicesManager) getSystemService(
                 Context.TEXT_SERVICES_MANAGER_SERVICE);
         mScs = tsm.newSpellCheckerSession(null, null, this, true);
+        if(mScs == null)
+            mScs = tsm.newSpellCheckerSession(null, Locale.ENGLISH, this, false);
     }
     
     /**
@@ -581,8 +584,10 @@ public class SoftKeyboard extends InputMethodService
                 ArrayList<String> list = new ArrayList<String>();
                 //list.add(mComposing.toString());
                 Log.d("SoftKeyboard", "REQUESTING: " + mComposing.toString());
-                mScs.getSentenceSuggestions(new TextInfo[] {new TextInfo(mComposing.toString())}, 5);
-                setSuggestions(list, true, true);
+                if(mScs != null) {
+                    mScs.getSentenceSuggestions(new TextInfo[]{new TextInfo(mComposing.toString())}, 5);
+                    setSuggestions(list, true, true);
+                }
             } else {
                 setSuggestions(null, false, false);
             }
